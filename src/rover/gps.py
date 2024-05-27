@@ -48,7 +48,7 @@ class Gps:
     robots: Sequence = field(default_factory=list)
 
     def get_coordinates_and_orientation(
-        self, *, direction: str, position: Coordinates, orientation: Orientation
+        self, *, direction: Direction, position: Coordinates, orientation: Orientation
     ) -> tuple[Coordinates, Orientation]:
         """
         Given a direction, position and orientation return new coordinates and orientation.

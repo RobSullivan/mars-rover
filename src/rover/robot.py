@@ -16,7 +16,7 @@ class Robot:
     starting_position: rover_gps.Coordinates
     orientation: rover_gps.Orientation
     gps: rover_gps.Gps
-    steps: Sequence[rover_gps.Step] = field(default_factory=list)
+    steps: list[rover_gps.Step] = field(default_factory=list)
     status: Status = Status.IDLE
 
     def __init__(self, starting_position, gps, orientation) -> None:
@@ -66,7 +66,7 @@ class Robot:
         else:
             return last_step.destination
 
-    def report(self) -> tuple[tuple, Status]:
+    def report(self) -> str:
         latest_position = self.get_latest_position()
         x, y = latest_position.x, latest_position.y
         return f"({x}, {y}, {self.orientation.value}) {self.status.value}"

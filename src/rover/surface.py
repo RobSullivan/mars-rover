@@ -1,4 +1,3 @@
-from collections.abc import Sequence
 from dataclasses import dataclass, field
 
 
@@ -6,7 +5,7 @@ from dataclasses import dataclass, field
 class Surface:
     rows: int
     columns: int
-    robots: Sequence = field(default_factory=list)
+    robots: list = field(default_factory=list)
 
     def add_robot(self, robot) -> None:
         if robot in self.robots:

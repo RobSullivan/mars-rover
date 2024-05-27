@@ -1,5 +1,7 @@
 import pytest
+
 from rover import gps as rover_gps
+from rover import surface as rover_surface
 
 
 class TestGps:
@@ -173,3 +175,66 @@ class TestGps:
         ]
 
         assert actual_steps == expected_steps
+
+    def test_destination_is_available(self):
+        rows = 2
+        columns = 2
+        surface = rover_surface.Surface(rows=rows, columns=columns)
+        gps = rover_gps.Gps(surface=surface)
+
+        gps.destination_available(rover_gps.Coordinates(x=2, y=1))
+
+    def test_destination_is_not_available(self):
+        rows = 2
+        columns = 2
+        surface = rover_surface.Surface(rows=rows, columns=columns)
+        gps = rover_gps.Gps(surface=surface)
+
+        with pytest.raises(rover_gps.OutOfBounds):
+            gps.destination_available(rover_gps.Coordinates(x=2, y=3))
+
+    @pytest.mark.parametrize(
+        "coordinates",
+        [
+            rover_gps.Coordinates(x=0, y=0),
+            rover_gps.Coordinates(x=1, y=3),
+            rover_gps.Coordinates(x=2, y=4),
+            rover_gps.Coordinates(x=4, y=5),
+        ],
+    )
+    def test_valid_coordinates(self, coordinates):
+        """
+        Test the gps returns valid coordinates
+
+        i.e. it takes into account the boundaries of the surface.
+        """
+        rows = 4
+        columns = 5
+        surface = rover_surface.Surface(rows=rows, columns=columns)
+
+        gps = rover_gps.Gps(surface=surface)
+
+        assert not gps.out_of_bounds(coordinates)
+
+    @pytest.mark.parametrize(
+        "coordinates",
+        [
+            rover_gps.Coordinates(x=-1, y=0),
+            rover_gps.Coordinates(x=1, y=-3),
+            rover_gps.Coordinates(x=5, y=4),
+            rover_gps.Coordinates(x=4, y=6),
+        ],
+    )
+    def test_invalid_coordinates(self, coordinates):
+        """
+        Test the gps returns valid coordinates
+
+        i.e. it takes into account the boundaries of the surface.
+        """
+        rows = 4
+        columns = 5
+        surface = rover_surface.Surface(rows=rows, columns=columns)
+
+        gps = rover_gps.Gps(surface=surface)
+
+        assert gps.out_of_bounds(coordinates)

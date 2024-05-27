@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 from rover import surface as rover_surface
@@ -36,9 +36,16 @@ class Step:
     direction: Direction
 
 
+class OutOfBounds(Exception): ...
+
+
+class DestinationUnavailable(Exception): ...
+
+
 @dataclass
 class Gps:
     surface: rover_surface.Surface
+    robots: Sequence = field(default_factory=list)
 
     def get_coordinates_and_orientation(
         self, *, direction: str, position: Coordinates, orientation: Orientation
@@ -135,3 +142,29 @@ class Gps:
             orientation = step.orientation
 
         return steps
+
+    def out_of_bounds(self, coordinates: Coordinates) -> bool:
+        """
+        A valid coordinate is within the boundaries of the surface
+        """
+        x, y = coordinates.x, coordinates.y
+        if x < 0 or y < 0:
+            return True
+        if coordinates.x > self.surface.rows:
+            return True
+        if coordinates.y > self.surface.columns:
+            return True
+
+        return False
+
+    def destination_available(self, coordinates: Coordinates) -> None:
+        """
+        Check the coordinates are within bounds and that the destination is available.
+        """
+        if self.out_of_bounds(coordinates):
+            raise OutOfBounds
+        occupied_locations = [
+            robot.get_latest_position() for robot in self.surface.robots
+        ]
+        if coordinates in occupied_locations:
+            raise DestinationUnavailable

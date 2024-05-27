@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from dataclasses import dataclass
 from enum import Enum
 
@@ -26,6 +27,13 @@ class Coordinates:
 
 INCREMENT = 1
 DECREMENT = 1
+
+
+@dataclass
+class Step:
+    destination: Coordinates
+    orientation: Orientation
+    direction: Direction
 
 
 @dataclass
@@ -102,3 +110,28 @@ class Gps:
                 raise Exception(
                     "Unable to create coordinates and orientation direction"
                 )
+
+    def get_plan(
+        self, *, directions: str, position: Coordinates, orientation: Orientation
+    ) -> Sequence[Step]:
+        """
+        Return a list steps that represent a plan of how step through the directions.
+        """
+        steps = []
+        for direction in directions:
+            coordinates, orientation = self.get_coordinates_and_orientation(
+                direction=Direction(direction),
+                position=position,
+                orientation=orientation,
+            )
+            step = Step(
+                destination=coordinates,
+                orientation=orientation,
+                direction=Direction(direction),
+            )
+            steps.append(step)
+            # Overwrite `position` and `orientation` to use new values in the next iteration.
+            position = step.destination
+            orientation = step.orientation
+
+        return steps

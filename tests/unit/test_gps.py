@@ -8,7 +8,7 @@ class TestGps:
         surface = object
         gps = rover_gps.Gps(surface=surface)
         assert gps.surface
-    
+
     @pytest.mark.parametrize(
         "current_orientation, direction, expected_coordinates, expected_orientation",
         [
@@ -121,3 +121,55 @@ class TestGps:
         )
         assert actual_coordinates == expected_coordinates
         assert actual_orientation == expected_orientation
+
+    def test_get_steps(self):
+        """
+        Given some directions, a start position and start orientation
+        generate a "plan", or sequence of steps.
+        """
+        start_position = rover_gps.Coordinates(x=0, y=0)
+        start_orientation = rover_gps.Orientation.NORTH
+
+        directions = "FFRFFL"
+
+        gps = rover_gps.Gps(surface=object)
+        actual_steps = gps.get_plan(
+            directions=directions,
+            position=start_position,
+            orientation=start_orientation,
+        )
+
+        expected_steps = [
+            rover_gps.Step(
+                destination=rover_gps.Coordinates(x=0, y=1),
+                orientation=rover_gps.Orientation.NORTH,
+                direction=rover_gps.Direction.FORWARD,
+            ),
+            rover_gps.Step(
+                destination=rover_gps.Coordinates(x=0, y=2),
+                orientation=rover_gps.Orientation.NORTH,
+                direction=rover_gps.Direction.FORWARD,
+            ),
+            rover_gps.Step(
+                destination=rover_gps.Coordinates(x=1, y=2),
+                orientation=rover_gps.Orientation.EAST,
+                direction=rover_gps.Direction.RIGHT,
+            ),
+            rover_gps.Step(
+                destination=rover_gps.Coordinates(x=2, y=2),
+                orientation=rover_gps.Orientation.EAST,
+                direction=rover_gps.Direction.FORWARD,
+            ),
+            rover_gps.Step(
+                destination=rover_gps.Coordinates(x=3, y=2),
+                orientation=rover_gps.Orientation.EAST,
+                direction=rover_gps.Direction.FORWARD,
+            ),
+            rover_gps.Step(
+                destination=rover_gps.Coordinates(x=3, y=3),
+                orientation=rover_gps.Orientation.NORTH,
+                direction=rover_gps.Direction.LEFT,
+            ),
+        ]
+
+        assert actual_steps == expected_steps

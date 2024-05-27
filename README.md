@@ -20,5 +20,6 @@ Pytest was used for writing tests so all the tests can be run with the command:
 
 `Surface` - a container that defines the boundaries for the robots to move around in. 
 `Gps` - the gps has the logic for moving about the surface.
+`Step` - a container of coordinates, direction and orientation
 
 ## Assumptions

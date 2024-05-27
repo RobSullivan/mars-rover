@@ -16,4 +16,8 @@ Pytest was used for writing tests so all the tests can be run with the command:
 
 `pytest .`
 
+## Modelling
+
+`Surface` - a container that defines the boundaries for the robots to move around in. 
+
 ## Assumptions
